@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUp, Check, Lock, LockOpen, Mail, Plus, Printer, Trash2, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import {
   addLetter,
@@ -177,6 +178,53 @@ function LetterSheet({
   );
 }
 
+/**
+ * The copy of a letter that goes to the printer: plain, one page, and placed
+ * straight under <body> so the rest of the app can be left off the paper.
+ * Grown-ups' ticks are never printed.
+ */
+function PrintLetter({ letter }: { letter: Letter }) {
+  // A long letter is set a little smaller so that even a full one fits a single page.
+  const compact = letter.wishes.length > 12;
+  return createPortal(
+    <div className="print-letter">
+      <div className="print-sheet">
+        <p className="script" style={{ fontSize: 44, lineHeight: 1.2, color: '#b3122b' }}>
+          Dear Santa,
+        </p>
+        <p style={{ fontSize: 18, marginTop: 8 }}>
+          My name is <strong>{letter.name}</strong> and I have been very good this year.
+        </p>
+        <p style={{ fontSize: 18, marginTop: 6 }}>For Christmas I would love:</p>
+        <ol style={{ marginTop: 10 }}>
+          {letter.wishes.map((wish) => (
+            <li
+              key={wish.id}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                fontSize: compact ? 15 : 20,
+                padding: compact ? '3px 0' : '7px 0',
+                borderBottom: '1.5px dashed #b99a6a',
+              }}
+            >
+              <span aria-hidden style={{ fontSize: compact ? 17 : 24, width: 34, textAlign: 'center' }}>
+                {wish.icon}
+              </span>
+              {wish.text}
+            </li>
+          ))}
+        </ol>
+        <p className="script" style={{ fontSize: 38, lineHeight: 1.2, color: '#0f6a3f', textAlign: 'right', marginTop: 18 }}>
+          Love, {letter.name}
+        </p>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 /** The grown-ups' gate: a birth year, so a small child cannot wander in. Nothing typed here is kept. */
 function GrownUpGate({ onOpen, onCancel }: { onOpen: () => void; onCancel: () => void }) {
   const [year, setYear] = useState('');
@@ -250,6 +298,12 @@ export function WishList({
   const [gate, setGate] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const current = letters.find((letter) => letter.id === openId) ?? letters[0] ?? null;
+
+  // While the letters are open, printing prints the open letter and nothing else.
+  useEffect(() => {
+    document.body.classList.add('printing-letter');
+    return () => document.body.classList.remove('printing-letter');
+  }, []);
 
   // Focus the Close button once, when the window opens. This must not depend
   // on `onClose`: the page re-renders many times a second with the clock, and
@@ -418,6 +472,8 @@ export function WishList({
             </div>
           )}
         </div>
+
+        {current && <PrintLetter letter={current} />}
 
         <p className="relative mt-400 text-center text-200 text-muted-foreground print:hidden">
           First names or nicknames only, please: no surnames, ages, birthdays or addresses. Nothing here is sent

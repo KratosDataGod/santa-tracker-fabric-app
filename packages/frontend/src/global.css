@@ -880,19 +880,44 @@ input[type='range'].scrubber:focus-visible {
   border-bottom: 1.5px dashed rgba(92, 56, 14, 0.45);
 }
 
-/* Printing a letter: just the sheet, on white. */
+/* Printing a letter.
+   The letter is printed from its own copy, placed directly under <body>, and
+   the whole app is removed from the printed page (not merely hidden, which
+   would leave pages of blank space where the dashboard was). */
+.print-letter {
+  display: none;
+}
 @media print {
-  body:has(.wishlist-overlay) > #root > * { visibility: hidden; }
-  .wishlist-overlay, .wishlist-overlay * { visibility: visible; }
-  .wishlist-overlay {
-    position: absolute !important;
-    inset: 0 !important;
-    display: block !important;
+  @page {
+    size: auto;
+    margin: 14mm;
+  }
+  html,
+  body {
+    height: auto !important;
+    min-height: 0 !important;
     overflow: visible !important;
     background: #fff !important;
-    padding: 0 !important;
   }
-  .wishlist-overlay .panel { background: none !important; box-shadow: none !important; max-width: none !important; }
-  .wishlist-overlay .panel::before { display: none !important; }
-  .snowfall, .santa-alert { display: none !important; }
+  body.printing-letter > *:not(.print-letter) {
+    display: none !important;
+  }
+  body.printing-letter > .print-letter {
+    display: block;
+    color: #2a1a0c;
+    font-family: var(--font-base);
+    break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-letter .print-sheet {
+    border: 3px solid #b3122b;
+    border-radius: 6px;
+    padding: 12mm 12mm 10mm;
+    background: #fffaf0;
+  }
+  .print-letter li {
+    break-inside: avoid;
+  }
 }
+
