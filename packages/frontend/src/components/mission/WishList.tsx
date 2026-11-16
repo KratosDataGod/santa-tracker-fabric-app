@@ -189,7 +189,7 @@ function PrintLetter({ letter }: { letter: Letter }) {
   return createPortal(
     <div className="print-letter">
       <div className="print-sheet">
-        <p className="script" style={{ fontSize: 44, lineHeight: 1.2, color: '#b3122b' }}>
+        <p className="script" style={{ fontSize: compact ? 32 : 44, lineHeight: 1.2, color: '#b3122b' }}>
           Dear Santa,
         </p>
         <p style={{ fontSize: 18, marginTop: 8 }}>
@@ -205,18 +205,19 @@ function PrintLetter({ letter }: { letter: Letter }) {
                 alignItems: 'center',
                 gap: 12,
                 fontSize: compact ? 14 : 20,
+                lineHeight: compact ? 1.2 : 1.5,
                 padding: compact ? '2px 0' : '7px 0',
                 borderBottom: '1.5px dashed #b99a6a',
               }}
             >
-              <span aria-hidden style={{ fontSize: compact ? 17 : 24, width: 34, textAlign: 'center' }}>
+              <span aria-hidden style={{ fontSize: compact ? 13 : 24, lineHeight: 1, width: 34, textAlign: 'center' }}>
                 {wish.icon}
               </span>
               {wish.text}
             </li>
           ))}
         </ol>
-        <p className="script" style={{ fontSize: 38, lineHeight: 1.2, color: '#0f6a3f', textAlign: 'right', marginTop: 18 }}>
+        <p className="script" style={{ fontSize: compact ? 28 : 38, lineHeight: 1.2, color: '#0f6a3f', textAlign: 'right', marginTop: compact ? 8 : 18 }}>
           Love, {letter.name}
         </p>
       </div>
