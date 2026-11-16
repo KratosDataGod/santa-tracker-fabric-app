@@ -204,8 +204,8 @@ function PrintLetter({ letter }: { letter: Letter }) {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                fontSize: compact ? 15 : 20,
-                padding: compact ? '3px 0' : '7px 0',
+                fontSize: compact ? 14 : 20,
+                padding: compact ? '2px 0' : '7px 0',
                 borderBottom: '1.5px dashed #b99a6a',
               }}
             >
